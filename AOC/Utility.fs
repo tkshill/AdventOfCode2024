@@ -30,6 +30,10 @@ module Maybe =
 
     let maybe = MaybeBuilder()
 
+    let mapO = Option.map
+
+    let withDefault = Option.defaultValue
+
 let logValue (value: 'T) =
     printfn "%A" value
     value
@@ -58,6 +62,10 @@ module Tuple =
 
     let mapT f f2 (a, b) = (f a, f2 b)
 
+    let mapFst f (a, b) = f a, b
+
+    let mapSnd f (a, b) = a, f b
+
     let foldT f g (a, b) = g (f a) b
 
     let curry f = fun x y -> f (x, y)
@@ -65,6 +73,8 @@ module Tuple =
     let curry3 f = fun x y z -> f (x, y, z)
 
     let uncurry f = fun (x, y) -> f x y
+
+    let tupleToSeq (a: 'a, b: 'a) = seq { yield a; yield b; } 
 
 
 [<AutoOpen>]
@@ -97,6 +107,8 @@ module SeqPlus =
     let forall = Seq.forall
 
     let groupBy = Seq.groupBy
+
+    let group (lst: 'a seq) =  Seq.groupBy id lst |> Seq.map (mapT id length)
 
     let head = Seq.head
 
@@ -141,6 +153,8 @@ module SeqPlus =
     let takeWhile = Seq.takeWhile
 
     let toList = Seq.toList
+
+    let transpose = Seq.transpose
 
     let tryPick = Seq.tryPick
 
