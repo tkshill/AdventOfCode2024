@@ -9,12 +9,6 @@ let runParser parser input =
     | Success(result, _, _) -> result
     | Failure(errorMsg, _, _) -> failwith errorMsg
 
-let curry f = fun x y -> f (x, y)
-
-let curry3 f = fun x y z -> f (x, y, z)
-
-let uncurry f = fun (x, y) -> f x y
-
 let flip f = fun x y -> f y x
 let ignore2 _ _ = ()
 
@@ -26,19 +20,15 @@ let rec trimEnds sequence =
     | x when Array.last x = "" -> trimEnds (x[.. (Array.length x - 2)])
     | _ -> sequence
 
-type MaybeBuilder() =
-    member _.Bind(m, f) = match m with Some x -> f x | None -> None
-    member _.Return(x) = Some x
-    member _.ReturnFrom(m) = m
-    member this.Zero() = None
+[<AutoOpen>]
+module Maybe =
+    type MaybeBuilder() =
+        member _.Bind(m, f) = match m with Some x -> f x | None -> None
+        member _.Return(x) = Some x
+        member _.ReturnFrom(m) = m
+        member this.Zero() = None
 
-let maybe = MaybeBuilder()
-
-let sequenceOptions (options: seq<'T option>) : 'T seq option =
-    if Seq.exists Option.isNone options then
-        None
-    else
-        Some (options |> Seq.choose id)
+    let maybe = MaybeBuilder()
 
 let logValue (value: 'T) =
     printfn "%A" value
@@ -57,15 +47,25 @@ let regMatch pattern s = Regex.Matches(s, pattern)
 let split (pattern: string) (s: string) = 
     s.Split([|pattern|], System.StringSplitOptions.RemoveEmptyEntries||| System.StringSplitOptions.TrimEntries )
 
-// let splitByLines (input: string) = split "\n" input
-
-let tupleMap f f2 (a, b) = (f a, f2 b)
 
 let not (f: 'a -> bool) = fun (x: 'a) -> not (f x)
 
-let flipT (a, b) = (b, a)
 
-let tupleFold f g (a, b) = g (f a) b
+[<AutoOpen>]
+module Tuple =
+
+    let flipT (a, b) = (b, a)
+
+    let mapT f f2 (a, b) = (f a, f2 b)
+
+    let foldT f g (a, b) = g (f a) b
+
+    let curry f = fun x y -> f (x, y)
+
+    let curry3 f = fun x y z -> f (x, y, z)
+
+    let uncurry f = fun (x, y) -> f x y
+
 
 [<AutoOpen>]
 module SeqPlus =
@@ -113,6 +113,12 @@ module SeqPlus =
     let pairwise = Seq.pairwise  
 
     let reduce = Seq.reduce
+
+    let sequenceOptions (options: seq<'T option>) : 'T seq option =
+        if Seq.exists Option.isNone options then
+            None
+        else
+            Some (options |> Seq.choose id)
 
     let inline sum (lst: seq< ^a >) : ^a when ^a : (static member (+) : ^a * ^a -> ^a) and ^a : (static member Zero : ^a) =
         Seq.sum lst
@@ -183,11 +189,15 @@ module SeqPlus =
 
     let cycle xs = repeat xs |> Seq.concat
 
+    let take n xs =
+        enumerate 0 xs |> takeWhile (fun (idx, _) -> idx < n) |> Seq.map snd
+
+[<AutoOpen>]
+module IOHelpers =
+    let readAllText (path: string) = System.IO.File.ReadAllText path   
+    
     let lines (stream: System.IO.Stream) =
         let sr = new System.IO.StreamReader(stream)
         repeatedly sr.ReadLine |> Seq.takeWhile ((<>) null)
 
     let slurp = System.IO.File.OpenRead >> lines
-
-    let take n xs =
-        enumerate 0 xs |> takeWhile (fun (idx, _) -> idx < n) |> Seq.map snd

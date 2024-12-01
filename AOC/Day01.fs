@@ -10,19 +10,19 @@ let parse input =
 
 let part1 input =
     parse input
-    |> tupleMap sort sort
+    |> mapT sort sort
     |> uncurry zip
     |> map (uncurry (-) >> abs)
     |> sum
 
-let transform groups n  =
+let calcScore groups n  =
     tryFind (fst >> (=) n) groups
     |> Option.map (snd >> length >> ((*) n))
     |> Option.defaultValue 0
 
 let part2 input =
     parse input
-    |> tupleMap id (groupBy id)
+    |> mapT id (groupBy id)
     |> flipT
-    |> tupleFold transform map
+    |> foldT calcScore map
     |> sum
