@@ -1,0 +1,31 @@
+# Build Folders
+bin/
+obj/
+
+# User-Specific Files
+*.user
+*.suo
+*.swp
+*.DS_Store
+*.vs/
+
+# Log Files
+*.log
+
+# IDE Files
+.idea/
+.vscode/
+.vscode/*
+
+# Configuration Files
+appsettings*.json
+
+# DotNet Specific
+*.dbmdl
+*.jfm
+*.pdb
+*.pidb
+
+# Temporary Files
+~$*
+*.tmp
