@@ -5,7 +5,7 @@ open FParsec.Pipes
 
 let parse  = 
     split "\n" 
-    >> map (runParser (%% +.pint32 -- spaces -- +.pint32-%> auto))
+    >> map (runParser (%% +.p<int> -- spaces -- +.p<int> -%> auto))
     >> fun lsts -> map fst lsts, map snd lsts
 
 let part1 input =
@@ -15,14 +15,14 @@ let part1 input =
     |> map (uncurry (-) >> abs)
     |> sum
 
-let calcScore groups n  =
-    tryFind (fst >> (=) n) groups
+let calcScore distincts n  =
+    tryFind (fst >> (=) n) distincts
     |> mapO (snd >> ((*) n))
     |> withDefault 0
 
 let part2 input =
     parse input
-    |> mapSnd group
+    |> mapSnd countDistinct
     |> flipT
     |> foldT calcScore map
     |> sum

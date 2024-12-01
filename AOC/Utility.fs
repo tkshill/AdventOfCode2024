@@ -108,7 +108,7 @@ module SeqPlus =
 
     let groupBy = Seq.groupBy
 
-    let group (lst: 'a seq) =  Seq.groupBy id lst |> Seq.map (mapT id length)
+    let countDistinct (lst: 'a seq) =  Seq.groupBy id lst |> Seq.map (mapT id length)
 
     let head = Seq.head
 
