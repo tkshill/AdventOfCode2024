@@ -24,11 +24,11 @@ let part1 input =
 
 let isSafe2 (lst: list<int * int>)  =
         seq { 
-            for i in -1..(length lst - 1) do
-                yield lst 
-                if i = -1 then yield lst[1..]
-                else if i = length lst - 1 then yield lst[0..(length lst - 2)]
-                else yield lst[0..i - 1] @ [fst lst[i], snd lst[i + 1]] @ lst[i + 2..]            
+            yield lst 
+            yield lst[1..]
+            yield lst[0..(length lst - 2)]
+            for i in 0..(length lst - 2) do
+                yield lst[0..i - 1] @ [fst lst[i], snd lst[i + 1]] @ lst[i + 2..]            
         } |> exists isSafe 
 
 let part2 input =
