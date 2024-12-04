@@ -4,8 +4,6 @@ open FSharpx.Collections
 open FParsec
 open FParsec.Pipes
 
-let lineParser = %% +.(p<int> * (qty[1..] / ' ')) -- spaces -|> ResizeArray.toSeq
-
 let isSafe lst =
     let diff = uncurry (-)
     let safeItem f value = f (diff value) && abs (diff value) > 0 && abs (diff value) < 4
@@ -15,6 +13,8 @@ let isSafe lst =
     |> reduce (||)
 
 let solve safeCheck =
+    let lineParser = %% +.(p<int> * (qty[1..] / ' ')) -- spaces -|> ResizeArray.toSeq
+
     split "\n"
     >> filter (runParser lineParser >> pairwise >> toList >> safeCheck)
     >> length
