@@ -19,6 +19,7 @@ obj/
 
 # Configuration Files
 appsettings*.json
+app.config
 
 # DotNet Specific
 *.dbmdl

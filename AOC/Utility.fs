@@ -9,6 +9,13 @@ let runParser parser input =
     | Success(result, _, _) -> result
     | Failure(errorMsg, _, _) -> failwith errorMsg
 
+let normalizeDay day = 
+    if day < 10 then "0" + day.ToString() else day.ToString()
+
+let thunk s = fun () -> s 
+
+let apply f x = f x
+
 let flip f = fun x y -> f y x
 let ignore2 _ _ = ()
 
@@ -52,7 +59,7 @@ let split (pattern: string) (s: string) =
     s.Split([|pattern|], System.StringSplitOptions.RemoveEmptyEntries||| System.StringSplitOptions.TrimEntries )
 
 
-let not (f: 'a -> bool) = fun (x: 'a) -> not (f x)
+//let not (f: 'a -> bool) = fun (x: 'a) -> not (f x)
 
 
 [<AutoOpen>]
@@ -72,6 +79,8 @@ module Tuple =
 
     let curry3 f = fun x y z -> f (x, y, z)
 
+    let ofList = Seq.ofList
+
     let uncurry f = fun (x, y) -> f x y
 
     let tupleToSeq (a: 'a, b: 'a) = seq { yield a; yield b; } 
@@ -79,6 +88,8 @@ module Tuple =
 
 [<AutoOpen>]
 module SeqPlus =
+
+    let append = Seq.append
 
     let choose = Seq.choose
 
@@ -126,6 +137,8 @@ module SeqPlus =
 
     let reduce = Seq.reduce
 
+    let skip = Seq.skip
+
     let sequenceOptions (options: seq<'T option>) : 'T seq option =
         if Seq.exists Option.isNone options then
             None
@@ -147,6 +160,8 @@ module SeqPlus =
     let rev = Seq.rev
 
     let toArray = Seq.toArray
+
+    let indexed = Seq.indexed
     
     let iter = Seq.iter
 

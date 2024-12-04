@@ -1,36 +1,27 @@
 ﻿open Argu
 open System
-open System.IO
 open System.Reflection
+open DataFetch
+
 
 // Define CLI argument options
 type CLIArgs =
-    | Day of int
-    | Part of int
+    | [<EqualsAssignment>][<First>] Day of int
+    | [<EqualsAssignment>] Part of int
+    | [<EqualsAssignment>][<First>] RefreshDay of int
+    | [<NoCommandLine>] SessionKey of string
     interface IArgParserTemplate with
         member s.Usage =
             match s with
             | Day _ -> "Specify the day of the Advent of Code solution to run."
             | Part _ -> "Specify the part (1 or 2) of the day's solution to run."
+            | RefreshDay _ -> "Refresh the input data for the specified day."
+            | SessionKey _ -> "Specify the session key to use for fetching input data."
 
-let normalizeDay day = 
-
-    if length day = 1 then "0" + day else day
-    |> sprintf "Day%s"
-
-let getInput day =
-    let dataFilePath = Path.Combine("data", $"{day}.txt")
-
-
-    if File.Exists(dataFilePath) then
-        Some (File.ReadAllText(dataFilePath))
-    else
-        printfn $"Input file {dataFilePath} not found."
-        None
 
 let getModule day =
     try
-        Some (Type.GetType(day, throwOnError = true))
+        Some (Type.GetType($"Day{normalizeDay(day)}", throwOnError = true))
     with
     | :? TypeLoadException ->
         printfn $"Module {day} not found."
@@ -64,13 +55,12 @@ let main argv =
     let arguments =  ArgumentParser.Create<CLIArgs>(programName = "AdventOfCode").Parse(argv)
 
     maybe {
-        let! rawDay = arguments.TryGetResult <@ Day @>
+
+        let! day = arguments.TryGetResult <@ Day @>
 
         let part = arguments.TryGetResult <@ Part @>
 
-        let day = normalizeDay (rawDay.ToString())
-
-        let! data = getInput (day)
+        let! data = getInputForDay day
 
         let! moduleType = getModule day
 

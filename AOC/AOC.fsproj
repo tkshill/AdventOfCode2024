@@ -4,9 +4,15 @@
     <TargetFramework>net8.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Content Include="app.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Compile Include="Utility.fs" />
+    <Compile Include="Day02.fs" />
     <Compile Include="Day01.fs" />
+    <Compile Include="DataFetch.fs" />
     <Compile Include="Program.fs" />
+
     <Content Include="data\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -15,6 +21,10 @@
     <PackageReference Include="Argu" Version="6.2.4" />
     <PackageReference Include="FParsec" Version="1.1.1" />
     <PackageReference Include="FParsec-Pipes" Version="1.1.2" />
+    <PackageReference Include="FSharp.Configuration" Version="2.0.0" />
     <PackageReference Include="FSharpx.Collections" Version="3.1.0" />
+    <PackageReference Include="FsHttp" Version="14.5.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.0" />
   </ItemGroup>
 </Project>
