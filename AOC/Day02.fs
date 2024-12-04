@@ -12,7 +12,12 @@ let isSafe lst =
 
 let solve safeCheck =
     let lineParser = %% +.(p<int> * (qty[1..] / ' ')) -- spaces -|> ResizeArray.toSeq
-    let counter = runParser lineParser >> pairwise >> toList >> safeCheck >> function | true -> 1 | _ -> 0
+    let counter = 
+        runParser lineParser 
+        >> pairwise 
+        >> toList 
+        >> safeCheck 
+        >> function | true -> 1 | _ -> 0
 
     split "\n" >> sumBy counter
 
@@ -21,8 +26,11 @@ let part1 input =
 
 let isSafe2 (lst: list<int * int>)  =
     seq { 
-        yield lst; yield lst[1..]; yield lst[0..(length lst - 2)]
-        for i in 0..(length lst - 2) do yield lst[0..i - 1] @ [fst lst[i], snd lst[i + 1]] @ lst[i + 2..];            
+        yield lst
+        yield lst[1..]
+        yield lst[0..(length lst - 2)]
+        for i in 0..(length lst - 2) do
+            yield lst[0..i - 1] @ [fst lst[i], snd lst[i + 1]] @ lst[i + 2..];            
     } |> exists isSafe 
 
 let part2 input =
