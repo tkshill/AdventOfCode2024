@@ -4,6 +4,8 @@ module Utils
 open FParsec
 open FParsec.Pipes
 open System.Text.RegularExpressions
+open FSharpx.Collections
+open System
 
 let runParser parser input =
     match run parser input with
@@ -28,6 +30,8 @@ let apply f x = f x
 
 let flip f = fun x y -> f y x
 let ignore2 _ _ = ()
+
+let toIntC c = c |> Seq.toArray |> String |> int
 
 let rec trimEnds sequence =
     match sequence with
@@ -230,6 +234,12 @@ module SeqPlus =
 
     let take n xs =
         enumerate 0 xs |> takeWhile (fun (idx, _) -> idx < n) |> Seq.map snd
+
+    let toSeqRS = ResizeArray.toSeq
+
+    let toArrayRS = ResizeArray.toArray
+
+    let toListRS = ResizeArray.toList
 
 [<AutoOpen>]
 module IOHelpers =

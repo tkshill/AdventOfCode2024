@@ -5,10 +5,10 @@ open FParsec.Pipes
 open FSharpx.Collections
 open System
 
-let solve = ResizeArray.toSeq >> choose id >> sumBy (uncurry (*))
+let solve = toSeqRS >> choose id >> sumBy (uncurry (*))
 
 let parseText = 
-    let pUpto3 = %% +.(digit * qty[1..3]) -|> (ResizeArray.toArray >> String >> int)
+    let pUpto3 = %% +.(digit * qty[1..3]) -|> (toArrayRS >> toIntC)
     let pMultiplier = %% "mul(" -- +.(pUpto3) -- ',' -- +.(pUpto3) -- ')'  -|> curry Some
     let pNotM = manySatisfy ((<>) 'm')
     let pM = %'m' >>% None
@@ -18,7 +18,7 @@ let parseText =
 let part1 input = runParser parseText input |> solve
 
 let pSet boolean = 
-    let parser = if boolean then pstring "do()" else pstring "don't()"
+    let parser = if boolean then %"do()" else %"don't()"
 
     parser .>> setUserState boolean >>% None
 
