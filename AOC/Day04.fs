@@ -5,16 +5,20 @@ let addToMap mapper dict (key, c) =
     |> mapO (snd >> flip (Map.add key) dict)
     |> withDefault dict
 
-let countXmas dict key =
-    let rec isXmas transform (v, key_) =
-        match tryFindM (transform key_) dict with
-        | Some x when x = v + 1 && x = 4 -> true
-        | Some x when x = v + 1 -> isXmas transform (x, (transform key_)) 
+let isXmas dict key transform =
+    let rec isXmas_ newKey lastVal =
+        match tryFindM newKey dict with
+        | Some x when x = lastVal + 1 && x = 4 -> true
+        | Some x when x = lastVal + 1 -> isXmas_ (transform newKey) x
         | _ -> false
     
+    isXmas_ (transform key) (Map.find key dict)
+
+let countXmas dict key =
+
     [ 1, 1; -1, -1; -1, 1; 1, -1; 0, 1; 0, -1; 1, 0; -1, 0 ]
     |> map (mapT inc inc >> uncurry mapT)
-    |> sumBy (flip isXmas ((Map.find key dict), key) >> intB)
+    |> sumBy (isXmas dict key >> intB)
 
 let getStarts dict = Map.filter (curry (snd >> eq 1)) dict |> Map.keys
 
@@ -28,7 +32,7 @@ let parse mapping input =
     } |> foldl (addToMap mapping) Map.empty
 
 let part1 input =
-    let dict = parse [('X', 1); ('M', 2); ('A', 3); ('S', 4)] input
+    let dict = parse [('X', 1); ('M', 2); ('A', 3); ('S', 4)] input  
 
     getStarts dict |> sumBy (countXmas dict)
 
