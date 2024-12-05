@@ -261,4 +261,8 @@ module IOHelpers =
 
 let tryFindM = Map.tryFind
 
+let eq = (=)
+
+let noteq = (<>)
+
 let intB = function true -> 1 | _ -> 0
