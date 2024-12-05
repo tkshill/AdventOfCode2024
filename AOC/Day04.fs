@@ -13,7 +13,7 @@ let countXmas dict key =
         | _ -> false
     
     [ 1, 1; -1, -1; -1, 1; 1, -1; 0, 1; 0, -1; 1, 0; -1, 0 ]
-    |> map (fun (x, y) -> mapT (inc x) (inc y))
+    |> map (mapT inc inc >> uncurry mapT)
     |> sumBy (flip isXmas ((Map.find key dict), key) >> intB)
 
 let getStarts dict = Map.filter (curry (snd >> eq 1)) dict |> Map.keys
