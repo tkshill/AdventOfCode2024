@@ -2,17 +2,21 @@
 module Utils
 
 open FParsec
+open FParsec.Pipes
 open System.Text.RegularExpressions
 
 let runParser parser input =
     match run parser input with
     | Success(result, _, _) -> result
-    | Failure(errorMsg, _, _) -> failwith errorMsg
+    | Failure(errorMsg, _, _) -> 
+        failwith $"Parser Error: {errorMsg}"
 
 let normalizeDay day = 
     if day < 10 then "0" + day.ToString() else day.ToString()
 
 let thunk s = fun () -> s 
+
+let boolToInt = function true -> 1 | _ -> 0
 
 let apply f x = f x
 

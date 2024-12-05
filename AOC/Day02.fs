@@ -6,18 +6,18 @@ open FParsec.Pipes
 
 let isSafe lst =
     let diff = uncurry (-)
-    let safeItem f value = f (diff value) && abs (diff value) > 0 && abs (diff value) < 4
+    let safeItem polarityCheck value = polarityCheck (diff value) && abs (diff value) > 0 && abs (diff value) < 4
 
     forall (safeItem ((>) 0)) lst || forall (safeItem ((<) 0)) lst
 
-let solve safeCheck =
+let solve safetyCheck =
     let lineParser = %% +.(p<int> * (qty[1..] / ' ')) -- spaces -|> ResizeArray.toSeq
     let counter = 
         runParser lineParser 
         >> pairwise 
         >> toList 
-        >> safeCheck 
-        >> function | true -> 1 | _ -> 0
+        >> safetyCheck 
+        >> boolToInt
 
     split "\n" >> sumBy counter
 
