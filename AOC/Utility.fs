@@ -22,6 +22,8 @@ let runParserWithState parser state input =
 let normalizeDay day = 
     if day < 10 then "0" + day.ToString() else day.ToString()
 
+let lastidx s = Seq.length s - 1
+
 let thunk s = fun () -> s 
 
 let boolToInt = function true -> 1 | _ -> 0
@@ -179,6 +181,8 @@ module SeqPlus =
     
     let iter = Seq.iter
 
+    let iteri = Seq.iteri
+
     let takeWhile = Seq.takeWhile
 
     let toList = Seq.toList
@@ -220,6 +224,10 @@ module SeqPlus =
             }
         | None -> Seq.empty
 
+    let inc by v = v + by
+
+    let dec by v = v - by
+
     let intercalate xs yss = intersperse xs yss |> Seq.concat
 
     let force xs = Seq.fold ignore2 () xs
@@ -250,3 +258,7 @@ module IOHelpers =
         repeatedly sr.ReadLine |> Seq.takeWhile ((<>) null)
 
     let slurp = System.IO.File.OpenRead >> lines
+
+let tryFindM = Map.tryFind
+
+let intB = function true -> 1 | _ -> 0
