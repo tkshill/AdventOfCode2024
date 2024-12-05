@@ -24,11 +24,8 @@ let getStarts dict = Map.filter (curry (snd >> eq 1)) dict |> Map.keys
 let parse charNums input = 
     let inputArray = split "\n" input
 
-    seq { 
-        for x in 0..lastidx inputArray do
-            for y in 0..lastidx inputArray[x] do
-                yield (x, y), inputArray[x][y] 
-    } |> foldl (addToMap charNums) Map.empty
+    seq { for x in 0..lastidx inputArray do for y in 0..lastidx inputArray[x] do yield (x, y), inputArray[x][y] } 
+    |> foldl (addToMap charNums) Map.empty
 
 let part1 input =
     let dict = parse [('X', 1); ('M', 2); ('A', 3); ('S', 4)] input  
