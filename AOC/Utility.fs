@@ -11,6 +11,12 @@ let runParser parser input =
     | Failure(errorMsg, _, _) -> 
         failwith $"Parser Error: {errorMsg}"
 
+let runParserWithState parser state input =
+    match runParserOnString parser state "" input with
+    | Success(result, _, _) -> result
+    | Failure(errorMsg, _, _) -> 
+        failwith $"Parser Error: {errorMsg}"
+
 let normalizeDay day = 
     if day < 10 then "0" + day.ToString() else day.ToString()
 
