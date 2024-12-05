@@ -238,6 +238,8 @@ module SeqPlus =
 
     let repeat x = repeatedly (fun () -> x)
 
+    let truncate = Seq.truncate
+
     let cycle xs = repeat xs |> Seq.concat
 
     let take n xs =
