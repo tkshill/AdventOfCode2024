@@ -1,21 +1,19 @@
 module Day04
 
-let addToMap mapper (dict: Map<int * int, int>) (key, c) = 
+let addToMap charNums (dict: Map<int * int, int>) (key, letter) = 
 
-    tryFind (fst >> eq c) mapper
+    tryFind (fst >> eq letter) charNums
     |> mapO (snd >> curry dict.Add key)
     |> withDefault dict
 
 let isXmas (dict: Map<int * int, int>) key transform =
-    let rec isXmas_ newKey lastVal =
-        match dict.TryFind newKey with
-        | Some x when x = lastVal + 1 && x = 4 -> true
-        | Some x when x = lastVal + 1 -> isXmas_ (transform newKey) x
-        | _ -> false
+    let isXmas_  = function
+        | newKey, Some lastVal when dict.TryFind newKey = Some (lastVal + 1) -> Some ((), (transform newKey, dict.TryFind newKey))
+        | _ -> None
     
-    isXmas_ (transform key) dict[key]
+    Seq.unfold isXmas_ (transform key, dict.TryFind key) |> Seq.truncate 3 |> Seq.length |> eq 3
 
-let countXmas dict key =
+let xmasCount dict key =
 
     [ 1, 1; -1, -1; -1, 1; 1, -1; 0, 1; 0, -1; 1, 0; -1, 0 ]
     |> map (mapT inc inc >> uncurry mapT)
@@ -23,24 +21,24 @@ let countXmas dict key =
 
 let getStarts dict = Map.filter (curry (snd >> eq 1)) dict |> Map.keys
 
-let parse mapping input = 
+let parse charNums input = 
     let inputArray = split "\n" input
 
     seq { 
-        for i in 0..lastidx inputArray do
-            for j in 0..lastidx inputArray[i] do
-                yield (i, j), inputArray[i][j] 
-    } |> foldl (addToMap mapping) Map.empty
+        for x in 0..lastidx inputArray do
+            for y in 0..lastidx inputArray[x] do
+                yield (x, y), inputArray[x][y] 
+    } |> foldl (addToMap charNums) Map.empty
 
 let part1 input =
     let dict = parse [('X', 1); ('M', 2); ('A', 3); ('S', 4)] input  
 
-    getStarts dict |> sumBy (countXmas dict)
+    getStarts dict |> sumBy (xmasCount dict)
 
-let ``countX-mas`` (dict: Map<int * int, int>) (i, j) =   
+let ``x-masCount`` (dict: Map<int * int, int>) (x, y) =   
     let matches = [ [0; 0; 2; 2]; [2; 0; 0; 2]; [2; 2; 0; 0]; [0; 2; 2; 0]]
 
-    [i - 1, j - 1; i - 1, j + 1; i + 1, j + 1; i + 1, j - 1]
+    [x - 1, y - 1; x - 1, y + 1; x + 1, y + 1; x + 1, y - 1]
     |> map dict.TryFind
     |> sequenceOptions
     |> mapO (toList >> eq >> flip List.exists matches >> intB)
@@ -50,5 +48,5 @@ let ``countX-mas`` (dict: Map<int * int, int>) (i, j) =
 let part2 input =
     let dict = parse [('M', 0); ('A', 1); ('S', 2)] input
 
-    getStarts dict |> sumBy (``countX-mas`` dict)
+    getStarts dict |> sumBy (``x-masCount`` dict)
  
