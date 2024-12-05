@@ -12,7 +12,8 @@ let countXmas dict key =
         | Some x when x = v + 1 -> isXmas transform (x, (transform key_)) 
         | _ -> false
     
-    [ mapT (inc 1) (inc 1); mapT (dec 1) (dec 1); mapT (dec 1) (inc 1); mapT (inc 1) (dec 1); mapT id (inc 1); mapT id (dec 1); mapT (inc 1) id; mapT (dec 1) id ]
+    [ 1, 1; -1, -1; -1, 1; 1, -1; 0, 1; 0, -1; 1, 0; -1, 0 ]
+    |> map (fun (x, y) -> mapT (inc x) (inc y))
     |> sumBy (flip isXmas ((Map.find key dict), key) >> intB)
 
 let getStarts dict = Map.filter (curry (snd >> eq 1)) dict |> Map.keys
@@ -23,7 +24,7 @@ let parse mapping input =
     seq { 
         for i in 0..lastidx inputArray do
             for j in 0..lastidx inputArray[i] do
-                yield ((i, j), inputArray[i][j]) 
+                yield (i, j), inputArray[i][j] 
     } |> foldl (addToMap mapping) Map.empty
 
 let part1 input =
