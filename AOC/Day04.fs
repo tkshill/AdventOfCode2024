@@ -16,7 +16,7 @@ let isXmas (dict: Map<int * int, int>) key transform =
 let xmasCount dict key =
 
     [ 1, 1; -1, -1; -1, 1; 1, -1; 0, 1; 0, -1; 1, 0; -1, 0 ]
-    |> map (mapT inc inc >> uncurry mapT)
+    |> map (spread inc >> uncurry mapT)
     |> sumBy (isXmas dict key >> intB)
 
 let getStarts dict = Map.filter (curry (snd >> eq 1)) dict |> Map.keys
@@ -40,7 +40,6 @@ let ``x-masCount`` (dict: Map<int * int, int>) (x, y) =
     |> sequenceOptions
     |> mapO (toList >> eq >> flip List.exists matches >> intB)
     |> withDefault 0
-
 
 let part2 input =
     let dict = parse [('M', 0); ('A', 1); ('S', 2)] input

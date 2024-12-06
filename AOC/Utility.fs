@@ -24,6 +24,8 @@ let normalizeDay day =
 
 let lastidx s = Seq.length s - 1
 
+let mul = (*)
+
 let thunk s = fun () -> s 
 
 let boolToInt = function true -> 1 | _ -> 0
@@ -32,6 +34,8 @@ let apply f x = f x
 
 let flip f = fun x y -> f y x
 let ignore2 _ _ = ()
+
+let spread f (a, b) = f a, f b
 
 let toIntC c = c |> Seq.toArray |> String |> int
 
@@ -57,11 +61,11 @@ module Maybe =
 
     let withDefault = Option.defaultValue
 
-let logValue (value: 'T) =
+let log (value: 'T) =
     printfn "%A" value
     value
 
-let logValueF message f a =
+let logF message f a =
     printfn $"{message} {f a}"
     a
 
@@ -191,7 +195,13 @@ module SeqPlus =
 
     let tryPick = Seq.tryPick
 
+    let tryFindIndex = Seq.tryFindIndex
+
     let unfold = Seq.unfold
+
+    let single = Seq.singleton
+
+    let empty = Seq.empty
 
     let zip = Seq.zip
 

@@ -17,7 +17,7 @@ MXMXAXMASX"
 
 [<Tests>]
 let tests =
-    testList "Day 04" [
+    ptestList "Day 04" [
         testList "Part 1" [              
             testCase "final check" <| fun _ ->
                 Day04.part1 sample

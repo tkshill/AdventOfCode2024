@@ -2,37 +2,22 @@ module Day03
 
 open FParsec
 open FParsec.Pipes
-open FSharpx.Collections
-open System
-
-let solve = toSeqRS >> choose id >> sumBy (uncurry (*))
 
 let parseText = 
-    let pUpto3 = %% +.(digit * qty[1..3]) -|> (toArrayRS >> toIntC)
-    let pMultiplier = %% "mul(" -- +.(pUpto3) -- ',' -- +.(pUpto3) -- ')'  -|> curry Some
-    let pNotM = manySatisfy ((<>) 'm')
-    let pM = %'m' >>% None
+    let pMul = %% "mul(" -- +.pint32 -- ',' -- +.pint32 -? ')' -|> curry Some
 
-    %% pNotM -- +.([attempt pMultiplier; pM] * (qty[1..] /. pNotM)) -%> auto
+    %% +.(%[pMul; (anyChar >>% None)] * qty[0..]) -%> auto
 
-let part1 input = runParser parseText input |> solve
+let part1 input = runParser parseText input |> (choose id >> sumBy (uncurry mul))
 
-let pSet boolean = 
-    let parser = if boolean then %"do()" else %"don't()"
+let pSet boolean = (if boolean then %"do()" else %"don't()") .>> setUserState boolean >>% None
 
-    parser .>> setUserState boolean >>% None
+let pMul2 =
+    let pMul = %% "mul(" -- +.(pint32) -- ',' -- +.(pint32) -? ')'  -|> curry Some
 
-let pMultiplier2 =
-    let pUpto3 = %% +.(digit * qty[1..3]) -|> (ResizeArray.toArray >> String >> int)
-    let pMultiplier = %% "mul(" -- +.(pUpto3) -- ',' -- +.(pUpto3) -- ')'  -|> curry Some
+    pipe2 pMul getUserState <| curry (function | result, true -> result | _ -> None)
 
-    pipe2 pMultiplier getUserState <| curry (function | result, true -> result | _ -> None)
+let part2 input = 
+    let parseText2 = %% +.(%[pMul2; pSet false; pSet true; anyChar >>% None] * (qty[0..] )) -%> auto
 
-let parseText2 =
-    let pD = %'d' >>% None
-    let pM = %'m' >>% None
-    let pNotMD = manySatisfy (fun c -> c <> 'm' && c <> 'd')
-
-    %% pNotMD -- +.([attempt pMultiplier2; attempt (pSet false); attempt (pSet true); attempt pM; pD;] * (qty[1..] /. pNotMD)) -%> auto
-
-let part2 input = runParserWithState parseText2 true  input |> solve
+    runParserWithState parseText2 true  input |> (choose id >> sumBy (uncurry mul))
