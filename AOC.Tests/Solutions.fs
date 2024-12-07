@@ -9,4 +9,5 @@ let tests =
         Day02.tests;
         Day03.tests;
         Day04.tests;
+        Day05.tests;
     ]

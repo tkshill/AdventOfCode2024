@@ -149,6 +149,10 @@ module SeqPlus =
 
     let mapi = Seq.mapi
 
+    let item = Seq.item
+
+    let pick = Seq.pick
+
     let seqmax = Seq.max
 
     let seqmin = Seq.min
