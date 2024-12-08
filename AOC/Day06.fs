@@ -23,7 +23,7 @@ let patrolRoute obstructions (aim, guard) =
 
 let generatePath router seed obstructions xMax yMax = 
     let stillIn (x, y) = not (x < 0 || y < 0 || x > xMax || y > yMax)
-    
+
     unfold (router obstructions) seed |> takeWhile stillIn 
 
 let part1 input =
@@ -32,10 +32,10 @@ let part1 input =
     generatePath patrolRoute ((-1, 0), guard) obstructions xMax yMax |> Set |> Set.add guard |> length
 
 let isOncoming (deltaX, deltaY) (guardX, guardY) (obstacleX, obstacleY) = 
+    let polarity x1 x = (float x1 - float x) / (abs (float x1 - float x))
 
-    if float deltaX = 0.0 && float guardX = float obstacleX
-    then ((float obstacleY - float guardY) / (abs (float obstacleY - float guardY))) = float deltaY
-    elif float deltaY = 0.0 && float guardY = float obstacleY then ((float obstacleX - float guardX) / (abs (float obstacleX - float guardX))) = float deltaX
+    if float deltaX = 0.0 && float guardX = float obstacleX then polarity obstacleY guardY = float deltaY
+    elif float deltaY = 0.0 && float guardY = float obstacleY then polarity obstacleX guardX = float deltaX
     else false
 
 let rec willLoop obstructions (collisions, aim, guard) =
