@@ -10,13 +10,13 @@ let rec options ops n =
 
     seq { if n = 0 then yield empty else for perm in options ops (n - 1) do yield! subPerms perm } 
     
-let solve ops (goal, head :: rest) = 
+let hasMatch ops (goal, head :: rest) = 
     options ops (length rest) |> exists (map2 (flip apply) rest >> foldl (flip apply) head >> eq goal)
 
 let part1 input =
-    split "\n" input |> map (runParser parseLine) |> filter (solve [(*); (+)]) |> sumBy fst
+    split "\n" input |> map (runParser parseLine) |> filter (hasMatch [(*); (+)]) |> sumBy fst
 
 let combine i j = $"{j}{i}" |> int64 |> bigint
 
 let part2 input = 
-    split "\n" input |> map (runParser parseLine) |> filter (solve [(*); (+); combine]) |> sumBy fst 
+    split "\n" input |> map (runParser parseLine) |> filter (hasMatch [(*); (+); combine]) |> sumBy fst 
