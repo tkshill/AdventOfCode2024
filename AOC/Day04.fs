@@ -17,7 +17,7 @@ let xmasCount dict key =
 
     [ 1, 1; -1, -1; -1, 1; 1, -1; 0, 1; 0, -1; 1, 0; -1, 0 ]
     |> map (spread inc >> uncurry mapT)
-    |> sumBy (isXmas dict key >> intB)
+    |> sumBy (isXmas dict key >> toIntB)
 
 let getStarts dict = Map.filter (curry (snd >> eq 1)) dict |> Map.keys
 
@@ -37,8 +37,8 @@ let ``x-masCount`` (dict: Map<int * int, int>) (x, y) =
 
     [x - 1, y - 1; x - 1, y + 1; x + 1, y + 1; x + 1, y - 1]
     |> map dict.TryFind
-    |> sequenceOptions
-    |> mapO (toList >> eq >> flip List.exists matches >> intB)
+    |> traverseM
+    |> mapO (toList >> eq >> flip List.exists matches >> toIntB)
     |> withDefault 0
 
 let part2 input =

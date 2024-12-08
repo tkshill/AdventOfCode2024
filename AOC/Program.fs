@@ -48,7 +48,7 @@ let getMethods (moduleType: Type) parts =
     |> map (fun methodInfo -> methodInfo.Name)
     |> filter whichParts 
     |> map (getMethod moduleType)
-    |> sequenceOptions
+    |> traverseM
 
 [<EntryPoint>]
 let main argv =

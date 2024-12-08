@@ -53,7 +53,7 @@ module Math =
 
     let lessThan criteria n =  n < criteria
 
-    let mul = (*)
+    let mul a b = b * a
 
     let noteq = (<>)
 
@@ -189,6 +189,8 @@ module Seq =
 
     let mapi = Seq.mapi
 
+    let map2 = Seq.map2
+
     let ofList = Seq.ofList
 
     let pick = Seq.pick
@@ -223,6 +225,10 @@ module Seq =
 
     let toArray = Seq.toArray
 
+    let tail = Seq.tail
+
+    let take = Seq.take
+
     let takeWhile = Seq.takeWhile
 
     let toList = Seq.toList
@@ -242,7 +248,6 @@ module Seq =
     let zip = Seq.zip
 
     let product xs = Seq.fold (*) 1 xs
-
 
     let inc by v = v + by
 
@@ -320,8 +325,6 @@ module IO =
     let logM message value =
         printfn "%s: %A" message value
         value
-
-
 
     let slurp = IO.File.OpenRead >> lines
 

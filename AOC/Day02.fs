@@ -17,7 +17,7 @@ let solve safetyCheck =
         >> pairwise 
         >> toList 
         >> safetyCheck 
-        >> boolToInt
+        >> toIntB
 
     split "\n" >> sumBy counter
 

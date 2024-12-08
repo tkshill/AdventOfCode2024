@@ -1,14 +1,19 @@
-module Day07.fs
+module Day07
 
 open FParsec
-open FParsec.Pipes
+open FParsec.Pipes 
 
-let pLine = %% +.pint32 -- ' ' -- +.(sepEndBy1 pint32 %' ') -%> auto
+let parseLine = (pint64 |>> bigint) .>> %": " .>>. sepEndBy1 (pint64 |>> bigint) %' '
 
-let solve (goal, values) =
-    seq { for x in values do for y in values do if x + y = goal then yield x * y }
+let rec options ops n = 
+    let subPerms perm = map (fun op -> seq { yield op; yield! perm }) ops
+    seq { if n = 0 then yield empty else for perm in options ops (n - 1) do yield! subPerms perm } 
+    
+let solve ops (goal, head :: rest) = options ops (length rest) |> exists (map2 (flip apply) rest >> foldl (flip apply) head >> eq goal)
 
-    0
 let part1 input =
-    split "\n" input |> map (runParser pLine) 
-    |> sumBy solve
+    split "\n" input |> map (runParser parseLine) |> filter (solve [(*); (+)]) |> sumBy fst
+
+let combine i j = $"{j}{i}" |> int64 |> bigint
+let part2 input = 
+    split "\n" input |> map (runParser parseLine) |> filter (solve [(*); (+); combine]) |> sumBy fst 
