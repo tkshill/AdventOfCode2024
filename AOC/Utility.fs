@@ -24,7 +24,15 @@ let normalizeDay day =
 
 let lastidx s = Seq.length s - 1
 
+let lessThan criteria n =  n < criteria
+
+let greaterThan criteria n = n > criteria
+
 let mul = (*)
+
+let fst3 (x, _, _) = x
+
+let trd (_, _, x) = x
 
 let thunk s = fun () -> s 
 
@@ -65,9 +73,9 @@ let log (value: 'T) =
     printfn "%A" value
     value
 
-let logF message f a =
-    printfn $"{message} {f a}"
-    a
+let logM message value =
+    printfn "%s: %A" message value
+    value
 
 let withEffect f a =
     f a
@@ -149,11 +157,19 @@ module SeqPlus =
 
     let mapi = Seq.mapi
 
+    let isEmpty = Seq.isEmpty
+
     let item = Seq.item
+
+    let partition condition = Seq.fold (fun (a, b) x -> if condition x then (x :: a, b) else (a, x :: b)) ([], [])
 
     let pick = Seq.pick
 
     let seqmax = Seq.max
+
+    let maxBy = Seq.maxBy
+
+    let minBy = Seq.minBy
 
     let seqmin = Seq.min
 

@@ -35,7 +35,7 @@ let sample =
 
 [<Tests>]
 let tests =
-    testList "Day 05" [
+    ptestList "Day 05" [
         testList "Part 1" [   
             testCase "Parser" <| fun _ ->
                 Day05.part1 sample
@@ -44,7 +44,7 @@ let tests =
             //     Day05.parsesample
             //     |> Expect.equal "The expected value is " 18;
             ]
-        testCase "Part 2" <| fun _ ->
+        ptestCase "Part 2" <| fun _ ->
             Day05.part2 sample
             |> Expect.equal "The expected value is "  123
     ]
