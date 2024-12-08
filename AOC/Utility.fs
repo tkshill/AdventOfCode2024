@@ -7,53 +7,87 @@ open System.Text.RegularExpressions
 open FSharpx.Collections
 open System
 
-let runParser parser input =
-    match run parser input with
-    | Success(result, _, _) -> result
-    | Failure(errorMsg, _, _) -> 
-        failwith $"Parser Error: {errorMsg}"
+[<AutoOpen>]
+module Parser =
 
-let runParserWithState parser state input =
-    match runParserOnString parser state "" input with
-    | Success(result, _, _) -> result
-    | Failure(errorMsg, _, _) -> 
-        failwith $"Parser Error: {errorMsg}"
+    let runParserWithState parser state input =
+        match runParserOnString parser state "" input with
+        | Success(result, _, _) -> result
+        | Failure(errorMsg, _, _) -> failwith errorMsg
 
-let normalizeDay day = 
-    if day < 10 then "0" + day.ToString() else day.ToString()
+    let runParser parser input =
+        match run parser input with
+        | Success(result, _, _) -> result
+        | Failure(errorMsg, _, _) -> failwith errorMsg
 
-let lastidx s = Seq.length s - 1
+[<AutoOpen>]
+module ResizeArray =
 
-let lessThan criteria n =  n < criteria
+    let toSeqRS = ResizeArray.toSeq
 
-let greaterThan criteria n = n > criteria
+    let toArrayRS = ResizeArray.toArray
 
-let mul = (*)
+    let toListRS = ResizeArray.toList
 
-let fst3 (x, _, _) = x
+[<AutoOpen>]
+module List =
 
-let trd (_, _, x) = x
+    let rec permutations = function
+        | []      -> seq [List.empty]
+        | x :: xs -> Seq.collect (insertions x) (permutations xs)
+    and insertions x = function
+        | []             -> [[x]]
+        | (y :: ys) as xs -> (x::xs)::(List.map (fun x -> y::x) (insertions x ys))
 
-let thunk s = fun () -> s 
+[<AutoOpen>]
+module Map =
 
-let boolToInt = function true -> 1 | _ -> 0
+    let tryFindM = Map.tryFind
+
+[<AutoOpen>]
+module Math =
+
+    let eq = (=)
+
+    let greaterThan criteria n = n > criteria
+
+    let lessThan criteria n =  n < criteria
+
+    let mul = (*)
+
+    let noteq = (<>)
+
+[<AutoOpen>]
+module Miscellaneous =
+
+    let flip f = fun x y -> f y x
+
+
+    let ignore2 _ _ = ()
+
+    let normalizeDay day = 
+        if day < 10 then "0" + day.ToString() else day.ToString()
+
+    let regMatch pattern s = Regex.Matches(s, pattern)
+
+    let split (pattern: string) (s: string) = 
+        s.Split([|pattern|], StringSplitOptions.RemoveEmptyEntries||| StringSplitOptions.TrimEntries )
+
+    let toIntB = function true -> 1 | _ -> 0
+    
+    let toIntC c = c |> Seq.toArray |> String |> int
+
+    let thunk s = fun () -> s
+
+    let rec trimEnds sequence =
+        match sequence with
+        | [||]
+        | [| "" |] -> Array.empty
+        | x when Array.head x = "" -> trimEnds (Array.tail x)
+        | x when Array.last x = "" -> trimEnds (x[.. (Array.length x - 2)])
+        | _ -> sequence
 
 let apply f x = f x
-
-let flip f = fun x y -> f y x
-let ignore2 _ _ = ()
-
-let spread f (a, b) = f a, f b
-
-let toIntC c = c |> Seq.toArray |> String |> int
-
-let rec trimEnds sequence =
-    match sequence with
-    | [||]
-    | [| "" |] -> Array.empty
-    | x when Array.head x = "" -> trimEnds (Array.tail x)
-    | x when Array.last x = "" -> trimEnds (x[.. (Array.length x - 2)])
-    | _ -> sequence
 
 [<AutoOpen>]
 module Maybe =
@@ -67,33 +101,22 @@ module Maybe =
 
     let mapO = Option.map
 
+    let spread f (a, b) = f a, f b
+
+    let traverseM (options: seq<'T option>) : 'T seq option =
+        if Seq.exists Option.isNone options then
+            None
+        else
+            Some (options |> Seq.choose id)
+
     let withDefault = Option.defaultValue
-
-let log (value: 'T) =
-    printfn "%A" value
-    value
-
-let logM message value =
-    printfn "%s: %A" message value
-    value
-
-let withEffect f a =
-    f a
-    a
-
-let regMatch pattern s = Regex.Matches(s, pattern)
-
-let split (pattern: string) (s: string) = 
-    s.Split([|pattern|], System.StringSplitOptions.RemoveEmptyEntries||| System.StringSplitOptions.TrimEntries )
-
-
-//let not (f: 'a -> bool) = fun (x: 'a) -> not (f x)
-
 
 [<AutoOpen>]
 module Tuple =
 
     let flipT (a, b) = (b, a)
+
+    let fst3 (x, _, _) = x
 
     let mapT f f2 (a, b) = (f a, f2 b)
 
@@ -105,17 +128,16 @@ module Tuple =
 
     let curry f = fun x y -> f (x, y)
 
-    let curry3 f = fun x y z -> f (x, y, z)
+    let curry3 f = fun x y z -> f (x, y, z)    
 
-    let ofList = Seq.ofList
+    let toSeqT (a: 'a, b: 'a) = seq { yield a; yield b; }
+
+    let trd (_, _, x) = x
 
     let uncurry f = fun (x, y) -> f x y
 
-    let tupleToSeq (a: 'a, b: 'a) = seq { yield a; yield b; } 
-
-
 [<AutoOpen>]
-module SeqPlus =
+module Seq =
 
     let append = Seq.append
 
@@ -129,7 +151,7 @@ module SeqPlus =
 
     let contains = Seq.contains
 
-    let containsS (subset: string) (s: System.String) = s.Contains(subset)
+    let containsS (subset: string) (s: String) = s.Contains(subset)
 
     let length = Seq.length
 
@@ -147,21 +169,27 @@ module SeqPlus =
 
     let groupBy = Seq.groupBy
 
-    let countDistinct (lst: 'a seq) =  Seq.groupBy id lst |> Seq.map (mapT id length)
+    let indexed = Seq.indexed
+
+    let isEmpty = Seq.isEmpty
+
+    let item = Seq.item
+    
+    let iter = Seq.iter
+
+    let iteri = Seq.iteri
 
     let head = Seq.head
 
     let last = Seq.last
 
+    let lastidx s = Seq.length s - 1
+
     let map = Seq.map
 
     let mapi = Seq.mapi
 
-    let isEmpty = Seq.isEmpty
-
-    let item = Seq.item
-
-    let partition condition = Seq.fold (fun (a, b) x -> if condition x then (x :: a, b) else (a, x :: b)) ([], [])
+    let ofList = Seq.ofList
 
     let pick = Seq.pick
 
@@ -179,12 +207,6 @@ module SeqPlus =
 
     let skip = Seq.skip
 
-    let sequenceOptions (options: seq<'T option>) : 'T seq option =
-        if Seq.exists Option.isNone options then
-            None
-        else
-            Some (options |> Seq.choose id)
-
     let inline sum (lst: seq< ^a >) : ^a when ^a : (static member (+) : ^a * ^a -> ^a) and ^a : (static member Zero : ^a) =
         Seq.sum lst
 
@@ -200,12 +222,6 @@ module SeqPlus =
     let rev = Seq.rev
 
     let toArray = Seq.toArray
-
-    let indexed = Seq.indexed
-    
-    let iter = Seq.iter
-
-    let iteri = Seq.iteri
 
     let takeWhile = Seq.takeWhile
 
@@ -225,19 +241,29 @@ module SeqPlus =
 
     let zip = Seq.zip
 
+    let product xs = Seq.fold (*) 1 xs
+
+
+    let inc by v = v + by
+
+    let dec by v = v - by
+
+    let force xs = Seq.fold ignore2 () xs
+
+    let truncate = Seq.truncate
+
+[<AutoOpen>]
+module SeqPlus = 
+
+    let countDistinct (lst: 'a seq) =  groupBy id lst |> map (mapT id length)
+
     let rec iterate f x =
         seq {
             yield x
             yield! iterate f (f x)
         }
 
-    let rec repeatedly f =
-        seq {
-            yield f ()
-            yield! repeatedly f
-        }
-
-    let product xs = Seq.fold (*) 1 xs
+    let count n = iterate ((+) 1) n
 
     let uncons xs =
         Seq.tryHead xs |> Option.map (fun x -> (x, Seq.tail xs))
@@ -254,47 +280,56 @@ module SeqPlus =
             }
         | None -> Seq.empty
 
-    let inc by v = v + by
-
-    let dec by v = v - by
-
     let intercalate xs yss = intersperse xs yss |> Seq.concat
 
-    let force xs = Seq.fold ignore2 () xs
+    let partition condition = 
+        Seq.fold (fun (a, b) x -> 
+            if condition x then (x :: a, b) else (a, x :: b)
+        ) ([], [])
 
-    let count n = iterate ((+) 1) n
-
-    let enumerate n xs = Seq.zip (count n) xs
+    let rec repeatedly f =
+        seq {
+            yield f ()
+            yield! repeatedly f
+        }
 
     let repeat x = repeatedly (fun () -> x)
 
-    let truncate = Seq.truncate
-
-    let cycle xs = repeat xs |> Seq.concat
-
-    let take n xs =
-        enumerate 0 xs |> takeWhile (fun (idx, _) -> idx < n) |> Seq.map snd
-
-    let toSeqRS = ResizeArray.toSeq
-
-    let toArrayRS = ResizeArray.toArray
-
-    let toListRS = ResizeArray.toList
+    let cycle xs = repeat xs |> concat
 
 [<AutoOpen>]
-module IOHelpers =
+module IO =
     let readAllText (path: string) = System.IO.File.ReadAllText path   
     
-    let lines (stream: System.IO.Stream) =
-        let sr = new System.IO.StreamReader(stream)
-        repeatedly sr.ReadLine |> Seq.takeWhile ((<>) null)
+    let lines (stream: IO.Stream) =
+        let sr = new IO.StreamReader(stream)
+        repeatedly sr.ReadLine |> takeWhile ((<>) null)
 
-    let slurp = System.IO.File.OpenRead >> lines
+    let log (value: 'T) =
+        printfn "%A" value
+        value
 
-let tryFindM = Map.tryFind
+    let logF func value =
+        printfn $"{func value}"
+        value
 
-let eq = (=)
+    let logFM message func value =
+        printfn $"{message}{func value}"
+        value
 
-let noteq = (<>)
+    let logM message value =
+        printfn "%s: %A" message value
+        value
 
-let intB = function true -> 1 | _ -> 0
+
+
+    let slurp = IO.File.OpenRead >> lines
+
+    let withEffect f a =
+        f a
+        a
+
+
+
+
+
