@@ -13,10 +13,12 @@ let rec options ops n =
 let hasMatch ops (goal, head :: rest) = 
     options ops (length rest) |> exists (map2 (flip apply) rest >> foldl (flip apply) head >> eq goal)
 
-let part1 input =
-    split "\n" input |> map (runParser parseLine) |> filter (hasMatch [(*); (+)]) |> sumBy fst
+let solve ops inputs =
+    inputs |> split "\n" |> map (runParser parseLine) |> filter (hasMatch ops) |> sumBy fst
+
+let part1 input = solve [(*); (+)] input
 
 let combine i j = $"{j}{i}" |> int64 |> bigint
 
-let part2 input = 
-    split "\n" input |> map (runParser parseLine) |> filter (hasMatch [(*); (+); combine]) |> sumBy fst 
+let part2 input = solve [(*); (+); combine] input
+   

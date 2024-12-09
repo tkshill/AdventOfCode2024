@@ -10,7 +10,6 @@ let toMap (lines: string array) =
 let twinPairs (lst: (int * int) list) = 
     seq { for i in 0..lastidx lst - 1 do for j in i + 1..lastidx lst do yield (lst[i], lst[j]); yield (lst[j], lst[i]) }
 
-
 let solve (dict: Map<char, list<int * int>>) resolver =
     let defineTranslation (pivotX, pivotY) (x, y) = ((x - pivotX) * -1, (y - pivotY) * -1), (pivotX, pivotY)
     let advancer (deltaX, deltaY) (x, y) = x + deltaX, y + deltaY
