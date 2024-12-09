@@ -4,7 +4,7 @@ open FParsec
 open FParsec.Pipes
 
 let parse  = 
-    split "\n" >> map (runParser (%% +.p<int> -- spaces -- +.p<int> -%> auto)) >> fun lsts -> map fst lsts, map snd lsts
+    runLineParser (%% +.p<int> -- spaces -- +.p<int> -%> auto) >> fun lsts -> map fst lsts, map snd lsts
 
 let part1 input = parse input |> spread sort |> uncurry zip |> map (uncurry (-) >> abs) |> sum
 

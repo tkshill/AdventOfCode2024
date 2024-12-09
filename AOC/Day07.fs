@@ -13,8 +13,7 @@ let rec permutations ops n =
 let hasMatch ops (goal, head :: rest) = 
     permutations ops (length rest) |> exists (map2 (flip apply) rest >> foldl (flip apply) head >> eq goal)
 
-let solve ops inputs =
-    inputs |> split "\n" |> map (runParser parseLine) |> filter (hasMatch ops) |> sumBy fst
+let solve ops = runLineParser parseLine >> filter (hasMatch ops) >> sumBy fst
 
 let part1 input = solve [(*); (+)] input
 

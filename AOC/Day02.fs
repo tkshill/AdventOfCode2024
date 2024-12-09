@@ -12,9 +12,8 @@ let isSafe lst =
 
 let solve safetyCheck =
     let lineParser = %% +.(p<int> * (qty[1..] / ' ')) -- spaces -|> ResizeArray.toSeq
-    let counter = runParser lineParser >> pairwise >> toList >> safetyCheck >> toIntB
-
-    split "\n" >> sumBy counter
+    
+    runLineParser lineParser >> sumBy (pairwise >> toList >> safetyCheck >> toIntB)
 
 let part1 input = solve isSafe input
 

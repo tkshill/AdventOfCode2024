@@ -7,19 +7,6 @@ open FSharpx.Collections
 open System
 
 [<AutoOpen>]
-module Parser =
-
-    let runParserWithState parser state input =
-        match runParserOnString parser state "" input with
-        | Success(result, _, _) -> result
-        | Failure(errorMsg, _, _) -> failwith errorMsg
-
-    let runParser parser input =
-        match run parser input with
-        | Success(result, _, _) -> result
-        | Failure(errorMsg, _, _) -> failwith errorMsg
-
-[<AutoOpen>]
 module ResizeArray =
 
     let toSeqRS = ResizeArray.toSeq
@@ -336,3 +323,19 @@ module IO =
     let withEffect f a =
         f a
         a
+
+[<AutoOpen>]
+module Parser =
+
+    let runParserWithState parser state input =
+        match runParserOnString parser state "" input with
+        | Success(result, _, _) -> result
+        | Failure(errorMsg, _, _) -> failwith errorMsg
+
+    let runParser parser input =
+        match run parser input with
+        | Success(result, _, _) -> result
+        | Failure(errorMsg, _, _) -> failwith errorMsg
+
+    let runLineParser parser input = split "\n" input |> map (runParser parser)
+        
