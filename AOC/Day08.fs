@@ -17,16 +17,17 @@ let solve (dict: Map<char, list<int * int>>) resolver =
 
     dict.Keys |> collect (flip Map.find dict >> twinPairs >> collect pairToAntinodes) |> distinct |> length
 
-let part1 input =
+let parse input =
     let lines = split "\n" input
-    let dict = toMap lines
-    let inBounds (x, y) = x >= 0 && y >= 0 && x <= lastidx lines && y <= lastidx lines[0]
 
-    solve dict (takeWhile inBounds >> (Seq.tryItem 1 >> mapO Seq.singleton) >> withDefault [])
+    toMap lines, fun (x, y) -> x >= 0 && y >= 0 && x <= lastidx lines && y <= lastidx lines[0]
+
+let part1 input =
+    let dict, boundaryCondition = parse input
+
+    solve dict (takeWhile boundaryCondition >> (tryItem 1 >> mapO singleton) >> withDefault [])
 
 let part2 input = 
-    let lines = split "\n" input
-    let inBounds (x, y) = x >= 0 && y >= 0 && x <= lastidx lines && y <= lastidx lines[0]
-    let dict = toMap lines
+    let dict, boundaryCondition = parse input
 
-    solve dict (takeWhile inBounds)
+    solve dict (takeWhile boundaryCondition)

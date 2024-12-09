@@ -18,7 +18,7 @@ let sample =
 let tests =
     ptestList "Day 07" [
         ptestCase "Can permute" <| fun _ ->
-            Day07.options [(*); (+)] 2
+            Day07.permutations [(*); (+)] 2
             |> length
             |> Expect.equal "The expected value is " 4;
         ptestCase "Part 1" <| fun _ ->

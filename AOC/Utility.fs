@@ -209,6 +209,8 @@ module Seq =
 
     let reduce = Seq.reduce
 
+    let singleton = Seq.singleton
+
     let skip = Seq.skip
 
     let inline sum (lst: seq< ^a >) : ^a when ^a : (static member (+) : ^a * ^a -> ^a) and ^a : (static member Zero : ^a) =
@@ -236,6 +238,8 @@ module Seq =
     let toList = Seq.toList
 
     let transpose = Seq.transpose
+
+    let tryItem = Seq.tryItem
 
     let tryPick = Seq.tryPick
 
