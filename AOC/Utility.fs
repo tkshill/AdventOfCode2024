@@ -2,7 +2,6 @@
 module Utils
 
 open FParsec
-open FParsec.Pipes
 open System.Text.RegularExpressions
 open FSharpx.Collections
 open System
@@ -337,8 +336,3 @@ module IO =
     let withEffect f a =
         f a
         a
-
-
-
-
-

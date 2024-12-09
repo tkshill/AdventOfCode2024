@@ -1,7 +1,6 @@
 module Day04
 
 let addToMap charNums (dict: Map<int * int, int>) (key, letter) = 
-
     tryFind (fst >> eq letter) charNums
     |> mapO (snd >> curry dict.Add key)
     |> withDefault dict
@@ -14,7 +13,6 @@ let isXmas (dict: Map<int * int, int>) key transform =
     unfold isXmas_ (transform key, dict.TryFind key) |> truncate 3 |> length |> eq 3
 
 let xmasCount dict key =
-
     [ 1, 1; -1, -1; -1, 1; 1, -1; 0, 1; 0, -1; 1, 0; -1, 0 ]
     |> map (spread inc >> uncurry mapT)
     |> sumBy (isXmas dict key >> toIntB)

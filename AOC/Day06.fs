@@ -40,16 +40,16 @@ let isOncoming (deltaX, deltaY) (guardX, guardY) (obstacleX, obstacleY) =
 
 let rec willLoop obstructions (collisions, aim, guard) =
     let distance (x, y: int) (x1, y1) = (abs (x - x1)) + (abs (y - y1))
-    let incomingObstructions = Set.filter (isOncoming aim guard) obstructions
+    let incomings = Set.filter (isOncoming aim guard) obstructions
 
-    if isEmpty incomingObstructions then 0
+    if isEmpty incomings then 0
     else
-        let closestObstruction = minBy (distance guard) incomingObstructions
-        let beforeCollision = moveGuard (spread (mul -1) aim) closestObstruction
-        let collision = closestObstruction, beforeCollision
+        let nearest = minBy (distance guard) incomings
+        let preCollide = moveGuard (spread (mul -1) aim) nearest
+        let hit = nearest, preCollide
 
-        if contains collision collisions then 1
-        else willLoop obstructions (collision :: collisions, rotate aim, beforeCollision)
+        if contains hit collisions then 1
+        else willLoop obstructions (hit :: collisions, rotate aim, preCollide)
 
 let part2 input =
     let guard, obstructions, (xMax, yMax) = parse input
