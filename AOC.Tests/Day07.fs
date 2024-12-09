@@ -16,7 +16,7 @@ let sample =
 
 [<Tests>]
 let tests =
-    testList "Day 07" [
+    ptestList "Day 07" [
         ptestCase "Can permute" <| fun _ ->
             Day07.options [(*); (+)] 2
             |> length

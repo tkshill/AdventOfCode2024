@@ -8,6 +8,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Compile Include="Utility.fs" />
+    <Compile Include="Day08.fs" />
     <Compile Include="Day07.fs" />
     <Compile Include="Day06.fs" />
     <Compile Include="Day05.fs" />

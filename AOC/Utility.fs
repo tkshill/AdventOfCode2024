@@ -153,6 +153,8 @@ module Seq =
 
     let containsS (subset: string) (s: String) = s.Contains(subset)
 
+    let distinct = Seq.distinct
+
     let length = Seq.length
 
     let exists = Seq.exists
