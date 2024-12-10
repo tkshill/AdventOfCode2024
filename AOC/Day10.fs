@@ -1,7 +1,6 @@
 module Day10
 
-let parse = 
-    split "\n" >> stringsToSeq >> map (mapT id charToInt) >> Map.ofSeq
+let parse = split "\n" >> stringsToSeq >> map (mapT id charToInt) >> Map.ofSeq
 
 let neighbours dict (x, y) = 
     
@@ -18,19 +17,17 @@ let rec dfs dict visited count = function
         dfs dict (visited.Add node) newCount (available @ rest)
 
 let solve solver = 
-    Map.filter (curry (snd >> eq 0)) 
-    >> Map.keys 
-    >> sumBy (List.singleton >> solver)
+    Map.filter (curry (snd >> eq 0)) >> Map.keys >> sumBy (List.singleton >> solver)
 
 let part1 input =
     let dict = parse input
 
-    dict |> solve(dfs dict Set.empty 0)
+    dict |> solve (dfs dict Set.empty 0)
 
 let rec dfs2 (dict: Map<int * int, int>) count = function
     | [] -> count
 
-    | node :: rest -> //printfn $"node: {node}, value: {dict[node]} rest: {rest} count: {count}"
+    | node :: rest ->
         if dict[node] = 9 then dfs2 dict (count + 1) rest
         
         else dfs2 dict count (neighbours dict node @ rest)
