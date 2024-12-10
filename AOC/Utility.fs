@@ -37,11 +37,15 @@ module Math =
 
     let greaterThan criteria n = n > criteria
 
+    let isEven n = n % 2 = 0
+
     let lessThan criteria n =  n < criteria
 
     let mul a b = b * a
 
     let noteq = (<>)
+    
+    let charToInt (c: char) = int c - int '0'
 
 [<AutoOpen>]
 module Miscellaneous =
@@ -99,6 +103,8 @@ module Maybe =
 
 [<AutoOpen>]
 module Tuple =
+
+    let toTuple x y = x, y
 
     let flipT (a, b) = (b, a)
 
@@ -251,6 +257,8 @@ module Seq =
 
 [<AutoOpen>]
 module SeqPlus = 
+
+    let stringsToSeq (lines: string array) = seq { for i in 0..lastidx lines do for j in 0..lastidx lines do yield (i, j), lines[i][j] }
 
     let countDistinct (lst: 'a seq) =  groupBy id lst |> map (mapT id length)
 

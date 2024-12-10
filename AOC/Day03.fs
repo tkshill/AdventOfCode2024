@@ -8,16 +8,21 @@ let parseText =
 
     %% +.(%[pMul; (anyChar >>% None)] * qty[0..]) -%> auto
 
-let part1 input = runParser parseText input |> (choose id >> sumBy (uncurry mul))
+let part1 input =
+    runParser parseText input |> (choose id >> sumBy (uncurry mul))
 
-let pSet boolean = (if boolean then %"do()" else %"don't()") .>> setUserState boolean >>% None
+let pSet boolean = 
+    (if boolean then %"do()" else %"don't()") .>> setUserState boolean >>% None
 
 let pMul2 =
     let pMul = %% "mul(" -- +.(pint32) -- ',' -- +.(pint32) -? ')'  -|> curry Some
 
-    pipe2 pMul getUserState <| curry (function | result, true -> result | _ -> None)
+    pipe2 pMul getUserState 
+    <| curry (function | result, true -> result | _ -> None)
+
+let parseText2 = 
+    %% +.(%[pMul2; pSet false; pSet true; anyChar >>% None] * (qty[0..] )) -%> auto
 
 let part2 input = 
-    let parseText2 = %% +.(%[pMul2; pSet false; pSet true; anyChar >>% None] * (qty[0..] )) -%> auto
-
-    runParserWithState parseText2 true  input |> (choose id >> sumBy (uncurry mul))
+    runParserWithState parseText2 true  input 
+    |> (choose id >> sumBy (uncurry mul))

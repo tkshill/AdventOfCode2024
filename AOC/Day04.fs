@@ -7,8 +7,10 @@ let addToMap charNums (dict: Map<int * int, int>) (key, letter) =
 
 let isXmas (dict: Map<int * int, int>) key transform =
     let isXmas_  = function
-        | k, Some v when dict.TryFind k = Some (v + 1) -> Some ((), (transform k, dict.TryFind k))
-        | _ -> None
+        | k, Some v when dict.TryFind k = Some (v + 1) -> 
+            Some ((), (transform k, dict.TryFind k))
+        | _ -> 
+            None
     
     unfold isXmas_ (transform key, dict.TryFind key) |> truncate 3 |> length |> eq 3
 
@@ -17,12 +19,17 @@ let xmasCount dict key =
     |> map (spread inc >> uncurry mapT)
     |> sumBy (isXmas dict key >> toIntB)
 
-let getStarts dict = Map.filter (curry (snd >> eq 1)) dict |> Map.keys
+let getStarts dict = 
+    Map.filter (curry (snd >> eq 1)) dict 
+    |> Map.keys
 
 let parse charNums input = 
     let lines = split "\n" input
 
-    seq { for x in 0..lastidx lines do for y in 0..lastidx lines[x] do yield (x, y), lines[x][y] } 
+    seq { 
+        for x in 0..lastidx lines do 
+        for y in 0..lastidx lines[x] do 
+        yield (x, y), lines[x][y] } 
     |> foldl (addToMap charNums) Map.empty
 
 let part1 input =

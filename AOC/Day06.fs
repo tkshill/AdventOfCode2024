@@ -4,12 +4,17 @@ let parse input =
     let rows= split "\n" input
     let maxX, maxY = lastidx rows, lastidx rows[0]
 
-    seq { for x in 0..maxX do for y in 0..maxY do if rows[x][y] = '#' then yield x, y elif rows[x][y] = '^' then yield -x, -y } 
+    seq { 
+        for x in 0..maxX do 
+        for y in 0..maxY do 
+        if rows[x][y] = '#' then yield x, y elif rows[x][y] = '^' then yield -x, -y } 
     |> partition (fst >> lessThan 0)
-    |> fun (guards, obstructions) -> head guards |> spread (mul -1), Set obstructions, (maxX, maxY)
+    |> fun (guards, obstructions) -> 
+        head guards |> spread (mul -1), Set obstructions, (maxX, maxY)
 
-let rotate (deltaX, deltaY) = deltaY, deltaX * -1
-let moveGuard (deltaX, deltaY) (guardX, guardY) = guardX + deltaX, guardY + deltaY
+let rotate (dX, dY) = dY, dX * -1
+let moveGuard (dX, dY) (guardX, guardY) = 
+    guardX + dX, guardY + dY
 
 let patrolRoute obstructions (aim, guard) =
     let potentialGuard = moveGuard aim guard
@@ -29,13 +34,14 @@ let generatePath router seed obstructions xMax yMax =
 let part1 input =
     let guard, obstructions, (xMax, yMax) = parse input
 
-    generatePath patrolRoute ((-1, 0), guard) obstructions xMax yMax |> Set |> Set.add guard |> length
+    generatePath patrolRoute ((-1, 0), guard) obstructions xMax yMax 
+    |> Set |> Set.add guard |> length
 
-let isOncoming (deltaX, deltaY) (guardX, guardY) (obstacleX, obstacleY) = 
+let isOncoming (dX, dY) (guardX, guardY) (obstacleX, obstacleY) = 
     let polarity x1 x = (float x1 - float x) / (abs (float x1 - float x))
 
-    if float deltaX = 0.0 && float guardX = float obstacleX then polarity obstacleY guardY = float deltaY
-    elif float deltaY = 0.0 && float guardY = float obstacleY then polarity obstacleX guardX = float deltaX
+    if dX = 0 && guardX = obstacleX then polarity obstacleY guardY = float dY
+    elif dY = 0 && guardY = obstacleY then polarity obstacleX guardX = float dX
     else false
 
 let rec willLoop obstructions (collisions, aim, guard) =
@@ -54,5 +60,6 @@ let rec willLoop obstructions (collisions, aim, guard) =
 let part2 input =
     let guard, obstructions, (xMax, yMax) = parse input
 
-    generatePath patrolRoute ((-1, 0), guard) obstructions xMax yMax |> Set |> Set.remove guard
+    generatePath patrolRoute ((-1, 0), guard) obstructions xMax yMax 
+    |> Set |> Set.remove guard
     |> sumBy (flip Set.add obstructions >> flip willLoop ([], (-1, 0), guard)) 

@@ -14,9 +14,12 @@ let parse =
     |>> mapT (foldl foldPairIntoMap Map.empty) id
 
 let rec isSorted (dict: Map<int, int Set>) = function
-    | _ :: [] -> true
-    | page :: others when Set.isSubset (Set others) dict[page] |> not -> false
-    | _ :: others -> isSorted dict others
+    | _ :: [] -> 
+        true
+    | page :: others when Set.isSubset (Set others) dict[page] |> not -> 
+        false
+    | _ :: others ->
+        isSorted dict others
 
 let middle items = item (length items / 2) items  // items[items.Length / 2]
 
@@ -33,12 +36,15 @@ let emitInOrder (dict: Map<int, int Set>) =
     match toList dict.Keys with
     | [] -> None
     | pageNumbers ->
-        let allSubPages = Map.fold (fun acc _ v -> Set.union acc v) Set.empty dict 
-        let highest :: _ , rest = List.partition (flip Set.contains allSubPages >> not) pageNumbers 
+        let allSubPages = 
+            Map.fold (fun acc _ v -> Set.union acc v) Set.empty dict 
+        let highest :: _ , rest = 
+            List.partition (flip Set.contains allSubPages >> not) pageNumbers 
 
         Some (highest, (refine dict rest))
 
 let part2 input =
     let dict, pagesList = runParser parse input
     
-    filter (isSorted dict >> not) pagesList |> sumBy (refine dict >> unfold emitInOrder >> toList >> middle) 
+    filter (isSorted dict >> not) pagesList 
+    |> sumBy (refine dict >> unfold emitInOrder >> toList >> middle) 
