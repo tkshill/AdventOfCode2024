@@ -12,19 +12,20 @@ let neighbours dict (x, y) =
 let rec dfs dict visited count = function
     | [] -> count
     | node :: rest ->
-        let available = neighbours dict node |> filter (not << flip Set.contains visited) |> toList
+        let available = neighbours dict node |> List.filter (not << flip Set.contains visited)
         let newCount = if dict[node] = 9 then count + 1 else count
 
         dfs dict (visited.Add node) newCount (available @ rest)
 
+let solve solver = 
+    Map.filter (curry (snd >> eq 0)) 
+    >> Map.keys 
+    >> sumBy (List.singleton >> solver)
 
 let part1 input =
     let dict = parse input
 
-    dict 
-    |> Map.filter (curry (snd >> eq 0)) 
-    |> Map.keys 
-    |> sumBy (List.singleton >> dfs dict Set.empty 0)
+    dict |> solve(dfs dict Set.empty 0)
 
 let rec dfs2 (dict: Map<int * int, int>) count = function
     | [] -> count
@@ -37,7 +38,4 @@ let rec dfs2 (dict: Map<int * int, int>) count = function
 let part2 input = 
     let dict = parse input
 
-    dict 
-    |> Map.filter (curry (snd >> eq 0)) 
-    |> Map.keys 
-    |> sumBy (List.singleton >> dfs2 dict 0)
+    dict |> solve (dfs2 dict 0)
