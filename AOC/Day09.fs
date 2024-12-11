@@ -3,8 +3,11 @@ module Day09
 type Item = { Idx: int; Start: int; Amt: int }
 
 let toItem { Amt = amt; Start = start } = function
-    | i, c when amt < 0 -> { Idx = i; Start = 0; Amt = charToInt c }
-    | i, c -> { Idx = i ; Start = start + amt; Amt = charToInt c }
+    | i, c when amt < 0 -> 
+        { Idx = i; Start = 0; Amt = charToInt c }
+
+    | i, c -> 
+        { Idx = i ; Start = start + amt; Amt = charToInt c }
 
 let parse =
     indexed >> toList >> Seq.scan toItem { Idx = -1; Start = -1; Amt = -1 } 
@@ -63,7 +66,7 @@ let rec optimize2 = function
 
     | changes, space :: _, ((file :: _) as files) when space.Start > file.Start -> changes @ files
 
-    | changes, spaces, (file :: files) 
+    | changes, spaces, (file :: files)
         when findSmalls spaces file = spaces -> optimize2 (file :: changes, spaces, files)
 
     | changes, spaces, (file :: files) -> 

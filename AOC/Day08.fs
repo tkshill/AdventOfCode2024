@@ -4,10 +4,8 @@ let updateMap dict (key, value) =
     Map.change key (function | Some lst -> Some (value :: lst) | None -> Some [value]) dict
 
 let toMap (lines: string array) = 
-    seq { 
-        for i in 0..lastidx lines do 
-        for j in 0..lastidx lines[i] do 
-        if lines[i][j] <> '.' then yield lines[i][j], (i, j) } 
+    stringsToSeq lines 
+    |> map flipT
     |> foldl updateMap Map.empty
 
 let twinPairs (lst: (int * int) list) = 
