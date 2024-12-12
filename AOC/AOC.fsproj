@@ -2,12 +2,14 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
+    <NoWarn>FS0025;FS3391;FS0097;FS0067</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="app.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Compile Include="Utility.fs" />
+    <Compile Include="Day11.fs" />
     <Compile Include="Day10.fs" />
     <Compile Include="Day09.fs" />
     <Compile Include="Day08.fs" />

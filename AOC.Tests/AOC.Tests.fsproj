@@ -4,9 +4,11 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <GenerateProgramFile>false</GenerateProgramFile>
+    <NoWarn>FS0025;FS3391;FS0097</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Day11.fs" />
     <Compile Include="Day10.fs" />
     <Compile Include="Day09.fs" />
     <Compile Include="Day08.fs" />

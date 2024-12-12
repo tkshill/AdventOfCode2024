@@ -205,6 +205,8 @@ module Seq =
 
     let skip = Seq.skip
 
+    let splitInto = Seq.splitInto
+
     let inline sum (lst: seq< ^a >) : ^a when ^a : (static member (+) : ^a * ^a -> ^a) and ^a : (static member Zero : ^a) =
         Seq.sum lst
 
@@ -331,7 +333,10 @@ module IO =
     let withEffect f a =
         f a
         a
-
+    let withEffectF effect f a =
+        effect f a
+        f a
+    
 [<AutoOpen>]
 module Parser =
 
