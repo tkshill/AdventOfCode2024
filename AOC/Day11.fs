@@ -4,9 +4,8 @@ open FParsec
 open FParsec.Pipes
 open System
 
-let parse = sepBy1 puint64 %' '
-
-let solomon  = string >> splitInto 2 >> map (String >> uint64) >> toList
+let solomon = 
+    string >> splitInto 2 >> map (String >> uint64) >> toList
 
 let updateNum = function
     | 0UL -> [1UL]
@@ -16,20 +15,19 @@ let updateNum = function
 let updates (stone, count) = 
     updateNum stone |> map (fun k -> k, count)
 
-let folder  =
-    collect updates 
-    >> groupBy fst
-    >> map (mapT id (sumBy snd)) 
-    >> logF (sumBy snd)
+let rec folder input  = function
+    | 0 -> sumBy snd input
+    | n ->
+        collect updates input 
+        |> groupBy fst
+        |> map (mapT id (sumBy snd))
+        |> flip folder (n - 1)
 
 let solve limit  =
-    runParser parse  
+    runParser (sepBy1 puint64 %' ')
     >> Seq.countBy id
     >> map (mapT id uint64)
-    >> iterate folder
-    >> take (limit + 1)
-    >> last
-    >> sumBy snd
+    >> flip folder limit
 
 let part1 input = solve 25 input
 
