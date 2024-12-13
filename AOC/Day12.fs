@@ -25,11 +25,11 @@ let rec solve stack fields (dict: Map<int * int, char>) =
 
             solve newStack newFields (dict.Remove node)
 
-let filiterInnerLines (lineCoordinates) = 
+let filterInnerLines (lineCoordinates) = 
     lineCoordinates 
     |> countBy id 
-    |> filter (snd >> eq 1) 
-    |> map snd 
+    |> filter (snd >> eq 1)
+    |> map fst
 
 
 // let areaAndLines input = 
@@ -43,7 +43,8 @@ let part1 input =
     let dict= input |> split "\n" |> stringsToSeq |> Map.ofSeq
 
     solve [dict.Keys |> head] [(0, Set.empty)] dict
-    |> map (mapSnd (filiterInnerLines))
+    |> map (mapSnd (filterInnerLines))
+
     |> map (mapSnd length)
     |> sumBy (log >> foldT id (*))
 
@@ -66,7 +67,11 @@ let part1 input =
 
 
 // let part2 input =
-//     areaAndLines input
-//     |> map (mapSnd findSides)
+//     let dict= input |> split "\n" |> stringsToSeq |> Map.ofSeq
+
+//     solve [dict.Keys |> head] [(0, Set.empty)] dict
+//     |> map (mapSnd (filiterInnerLines))
+    // |> map (mapSnd length)
+    // |> sumBy (log >> foldT id (*))
 
 
