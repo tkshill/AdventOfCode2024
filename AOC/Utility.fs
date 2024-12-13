@@ -145,6 +145,8 @@ module Seq =
 
     let containsS (subset: string) (s: String) = s.Contains(subset)
 
+    let countBy = Seq.countBy
+
     let distinct = Seq.distinct
 
     let length = Seq.length

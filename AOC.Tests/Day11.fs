@@ -8,7 +8,7 @@ let sample =
 
 [<Tests>]
 let tests =
-    testList "Day 11" [
+    ptestList "Day 11" [
         testCase "Part 1" <| fun _ ->
             Day11.part1 sample
             |> Expect.equal "The expected value is " 55312UL;

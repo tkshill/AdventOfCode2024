@@ -16,4 +16,5 @@ let tests =
         Day09.tests;
         Day10.tests;
         Day11.tests;
+        Day12.tests;
     ]
