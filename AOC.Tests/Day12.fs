@@ -21,5 +21,8 @@ let tests =
         testCase "Part 1" <| fun _ ->
             Day12.part1 sample
             |> Expect.equal "The expected value is " 1930;
+        // testCase "Part 2" <| fun _ ->
+        //     Day12.part2 sample
+        //     |> Expect.equal "The expected value is " 1206;
 
     ]

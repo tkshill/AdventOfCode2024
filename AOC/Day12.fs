@@ -19,59 +19,52 @@ let rec solve stack fields (dict: Map<int * int, char>) =
         match stack, fields with 
         | [], _ -> solve [(dict.Keys |> head)] ((0, empty) :: fields) dict
 
-        | node :: stack, fstField :: restFields ->
+        | node :: stack, field :: fields ->
             let newStack = List.distinct (findNeighbours dict node @ stack) 
-            let newFields = updateField fstField node :: restFields
+            let newFields = updateField field node :: fields
 
             solve newStack newFields (dict.Remove node)
 
 let filterInnerLines (lineCoordinates) = 
-    lineCoordinates 
-    |> countBy id 
-    |> filter (snd >> eq 1)
-    |> map fst
-
-
-// let areaAndLines input = 
-//     let dict= input |> split "\n" |> stringsToSeq |> Map.ofSeq
-   
-//     solve [dict.Keys |> head] [(0, Set.empty)] dict
-//     |> map (mapSnd (filiterInnerLines))
-//     |> toList
+    lineCoordinates |> countBy id |> filter (snd >> eq 1) |> map fst
 
 let part1 input = 
     let dict= input |> split "\n" |> stringsToSeq |> Map.ofSeq
 
     solve [dict.Keys |> head] [(0, Set.empty)] dict
-    |> map (mapSnd (filterInnerLines))
+    |> map (mapSnd (filterInnerLines >> length) >> log)
+    |> sumBy (foldT id (*))
 
-    |> map (mapSnd length)
-    |> sumBy (log >> foldT id (*))
 
-// let findSides lineCoords =
-//     let rec findSides' count cuurentlyHorizontal = function
-//         | [] -> count
-//         | head :: tail ->
-//             let (next :: _), rest = List.partition (Set.intersect head >> length >> eq 1) tail
-//             let coord1 :: coord2 :: _ = next
-//             let isHorizontal = fst coord1 = fst coord2
-//             let stillHorizontal = isHorizontal = cuurentlyHorizontal
+let findSides ((head :: tail): list<Set<float * float>>) =
+    let rec findSides' count currentlyHorizontal = function
+        | [] -> count
+        | last :: [] when last = head -> count
+        | last :: [] -> findSides' count currentlyHorizontal (last :: [head])
+        | head :: tail ->
+            //printfn "good0"
+            let test, rest = List.partition (Set.intersect head >> length >> greaterThan 0) tail
+            if test = [] then failwith $"No intersection found for\nHead: {head}\nTail: {tail}\nCount: {count}\n"
+            let next :: hmm = test
+            //printfn "good"
+            let coord1 :: coord2 :: _ = Set.toList next
+            //printfn "good1"
+            let isHorizontal = fst coord1 = fst coord2
+            let changed = isHorizontal <> currentlyHorizontal
 
-//             findSides' (count + toIntB stillHorizontal) isHorizontal (next :: rest)
+            findSides' (count + toIntB changed) isHorizontal (next :: hmm @ rest)
     
-//     let (first :: rest) = lineCoords
-//     let coord1 :: coord2 :: _ = Set.toList first
-//     let isHorizontal= fst coord1 = fst coord2
+    let coord1 :: coord2 :: _ = Set.toList head
+    let isHorizontal= fst coord1 = fst coord2
 
-//     findSides' 1 isHorizontal (first :: rest)
+    findSides' 0 isHorizontal (head :: tail) 
 
 
-// let part2 input =
-//     let dict= input |> split "\n" |> stringsToSeq |> Map.ofSeq
+let part2 input =
+    let dict= input |> split "\n" |> stringsToSeq |> Map.ofSeq
 
-//     solve [dict.Keys |> head] [(0, Set.empty)] dict
-//     |> map (mapSnd (filiterInnerLines))
-    // |> map (mapSnd length)
-    // |> sumBy (log >> foldT id (*))
+    solve [dict.Keys |> head] [(0, Set.empty)] dict
+    |> map (mapSnd (filterInnerLines >> toList >> findSides))
+    |> sumBy (foldT id (*))
 
 
