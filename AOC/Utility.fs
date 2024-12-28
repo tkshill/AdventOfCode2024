@@ -52,11 +52,12 @@ module Miscellaneous =
 
     let flip f = fun x y -> f y x
 
-
     let ignore2 _ _ = ()
 
     let normalizeDay day = 
         if day < 10 then "0" + day.ToString() else day.ToString()
+
+    let overlap (a: Set<'a>) (b: Set<'a>) = Set.intersect a b |> Set.isEmpty |> not
 
     let regMatch pattern s = Regex.Matches(s, pattern)
 
@@ -148,6 +149,8 @@ module Seq =
     let countBy = Seq.countBy
 
     let distinct = Seq.distinct
+
+    let distinctBy = Seq.distinctBy
 
     let length = Seq.length
 
