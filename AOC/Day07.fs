@@ -1,7 +1,7 @@
 module Day07
 
 open FParsec
-open FParsec.Pipes 
+open FParsec.Pipes
 
 let parseLine = (pint64 |>> bigint) .>> %": " .>>. sepEndBy1 (pint64 |>> bigint) %' '
 
@@ -19,9 +19,11 @@ let hasMatch ops (goal, head :: rest) =
 let solve ops = 
     runLineParser parseLine >> filter (hasMatch ops) >> sumBy fst
 
-let part1 input = solve [(*); (+)] input
+let part1 input =
+    solve [(*); (+)] input
 
-let combine i j = $"{j}{i}" |> int64 |> bigint
+let combine i j = 
+    $"{j}{i}" |> int64 |> bigint
 
-let part2 input = solve [(*); (+); combine] input
-   
+let part2 input = 
+    solve [(*); (+); combine] input

@@ -1,6 +1,5 @@
 module Day02
 
-open FSharpx.Collections
 open FParsec
 open FParsec.Pipes
 

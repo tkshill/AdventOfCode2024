@@ -17,7 +17,7 @@ MMMISSJEEE"
 
 [<Tests>]
 let tests =
-    testList "Day 12" [
+    ptestList "Day 12" [
         testCase "Part 1" <| fun _ ->
             Day12.part1 sample
             |> Expect.equal "The expected value is " 1930;
